@@ -61,13 +61,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
             transform-style: preserve-3d;
             transform-origin: bottom;
         }
         
-        .digit.flip {
-            transform: rotateX(90deg);
+        .digit .front, .digit .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backface-visibility: hidden;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .digit .back {
+            transform: rotateX(180deg);
+        }
+        
+        .flip .front {
+            transform: rotateX(180deg);
+            transition: transform 0.6s cubic-bezier(0.37, 0.24, 0.36, 1);
+        }
+        
+        .flip .back {
+            transform: rotateX(0deg);
+            transition: transform 0.6s cubic-bezier(0.37, 0.24, 0.36, 1);
         }
         
         .colon {
@@ -157,6 +179,35 @@
             50% { transform: translateY(-20px) rotate(5deg); }
         }
         
+        /* Botón de pantalla completa */
+        .fullscreen-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(216, 27, 96, 0.1);
+            border: 1px solid rgba(216, 27, 96, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .fullscreen-btn:hover {
+            background: rgba(216, 27, 96, 0.2);
+        }
+        
+        .fullscreen-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #d81b60;
+            opacity: 0.7;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .clock {
@@ -169,6 +220,13 @@
     </style>
 </head>
 <body>
+    <!-- Botón de pantalla completa -->
+    <div class="fullscreen-btn" id="fullscreen-btn">
+        <svg viewBox="0 0 24 24">
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+    </div>
+    
     <!-- Decoraciones de enredadera -->
     <svg class="vine vine-top-left" viewBox="0 0 100 100">
         <path d="M0,20 C20,0 40,10 50,30 C60,10 80,0 100,20" />
@@ -220,6 +278,7 @@
         // Elementos del DOM
         const clockElement = document.getElementById('clock');
         const dateElement = document.getElementById('date');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
         
         // Formato de fecha en español
         const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -231,7 +290,7 @@
         let prevMinutes = '';
         let prevSeconds = '';
         
-        // Crear estructura de dígitos
+        // Crear estructura de dígitos con animación flip
         function createClockStructure() {
             // HH:MM:SS
             const digits = [
@@ -260,6 +319,15 @@
                     digitSpan.dataset.type = digit.type;
                     digitSpan.dataset.tens = digit.tens;
                     
+                    // Crear caras frontal y trasera para el efecto flip
+                    const front = document.createElement('div');
+                    front.className = 'front';
+                    
+                    const back = document.createElement('div');
+                    back.className = 'back';
+                    
+                    digitSpan.appendChild(front);
+                    digitSpan.appendChild(back);
                     container.appendChild(digitSpan);
                     clockElement.appendChild(container);
                 }
@@ -289,8 +357,10 @@
             }
             
             // Actualizar segundos
-            updateDigit('seconds', seconds);
-            prevSeconds = seconds;
+            if (seconds !== prevSeconds) {
+                updateDigit('seconds', seconds);
+                prevSeconds = seconds;
+            }
             
             // Reproducir sonido cada hora en punto
             if (minutes === '00' && seconds === '00') {
@@ -298,38 +368,43 @@
             }
         }
         
-        // Actualizar dígito con animación
+        // Actualizar dígito con animación flip
         function updateDigit(type, value) {
             const tens = value[0];
             const units = value[1];
             
             // Actualizar decenas
             const tensElement = document.querySelector(`.digit[data-type="${type}"][data-tens="true"]`);
-            if (tensElement.textContent !== tens) {
-                animateDigit(tensElement, tens);
+            if (tensElement) {
+                updateSingleDigit(tensElement, tens);
             }
             
             // Actualizar unidades
             const unitsElement = document.querySelector(`.digit[data-type="${type}"][data-tens="false"]`);
-            if (unitsElement.textContent !== units) {
-                animateDigit(unitsElement, units);
+            if (unitsElement) {
+                updateSingleDigit(unitsElement, units);
             }
         }
         
-        // Animación de dígito
-        function animateDigit(element, newValue) {
-            // Activar animación
-            element.classList.add('flip');
+        // Actualizar un solo dígito con animación
+        function updateSingleDigit(element, newValue) {
+            const front = element.querySelector('.front');
+            const back = element.querySelector('.back');
             
-            // Cambiar el valor después de que comience la animación
-            setTimeout(() => {
-                element.textContent = newValue;
+            // Solo animar si el valor cambió
+            if (front.textContent !== newValue) {
+                // Configurar el nuevo valor en la parte trasera
+                back.textContent = newValue;
                 
-                // Quitar clase de animación después de que termine
+                // Activar animación
+                element.classList.add('flip');
+                
+                // Al finalizar la animación, actualizar el frente y reiniciar
                 setTimeout(() => {
+                    front.textContent = newValue;
                     element.classList.remove('flip');
-                }, 500);
-            }, 250);
+                }, 600);
+            }
         }
         
         // Reproducir sonido de campana
@@ -360,11 +435,38 @@
             }
         }
         
+        // Funcionalidad de pantalla completa
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error al intentar activar pantalla completa: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        // Cambiar ícono según modo pantalla completa
+        function updateFullscreenIcon() {
+            const icon = fullscreenBtn.querySelector('svg');
+            if (document.fullscreenElement) {
+                icon.innerHTML = '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>';
+            } else {
+                icon.innerHTML = '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
+            }
+        }
+        
         // Inicializar reloj
         function initClock() {
             createClockStructure();
             updateClock();
             setInterval(updateClock, 1000);
+            
+            // Eventos de pantalla completa
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
         }
         
         // Iniciar cuando el documento esté listo
