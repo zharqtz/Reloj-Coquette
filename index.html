@@ -1,124 +1,374 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reloj de Sylv</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #f8c8dc;
-      color: #c2185b;
-      font-family: 'Playfair Display', serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .corner-deco {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      background-image: url('https://i.imgur.com/VaGxIOz.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-    }
-
-    .corner-top-left {
-      top: 0;
-      left: 0;
-    }
-
-    .corner-bottom-right {
-      bottom: 0;
-      right: 0;
-      transform: rotate(180deg);
-    }
-
-    .clock-container {
-      display: flex;
-      font-size: 100px;
-      font-weight: bold;
-      height: 120px;
-    }
-
-    .digit {
-      overflow: hidden;
-      width: 60px;
-      height: 100px;
-      margin: 0 5px;
-      position: relative;
-    }
-
-    .digit span {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .date {
-      font-size: 40px;
-      margin-top: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reloj Decorativo Coquette</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffe6f2, #ffd1e6);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Playfair Display', serif;
+            color: #d81b60;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px;
+            max-width: 900px;
+        }
+        
+        .clock {
+            font-size: 10vw;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-shadow: 3px 3px 10px rgba(216, 27, 96, 0.2);
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .digit-container {
+            display: inline-block;
+            width: 1.1em;
+            height: 1.4em;
+            margin: 0 5px;
+            position: relative;
+            overflow: hidden;
+            perspective: 200px;
+        }
+        
+        .digit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transform-style: preserve-3d;
+            transform-origin: bottom;
+        }
+        
+        .digit.flip {
+            transform: rotateX(90deg);
+        }
+        
+        .colon {
+            margin: 0 5px;
+        }
+        
+        .date {
+            font-size: 2.5vw;
+            text-align: right;
+            margin-top: 10px;
+            opacity: 0.9;
+            font-weight: 400;
+            letter-spacing: 1px;
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .date::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            right: 0;
+            height: 2px;
+            width: 80px;
+            background: #d81b60;
+            border-radius: 2px;
+            opacity: 0.5;
+        }
+        
+        /* Decoraciones de enredadera */
+        .vine {
+            position: absolute;
+            z-index: 1;
+            stroke: #d81b60;
+            stroke-width: 1.5;
+            fill: none;
+            opacity: 0.2;
+        }
+        
+        .vine-top-left {
+            top: -20px;
+            left: -30px;
+            width: 250px;
+            height: 250px;
+            transform: rotate(-10deg);
+        }
+        
+        .vine-bottom-right {
+            bottom: -30px;
+            right: -50px;
+            width: 350px;
+            height: 350px;
+            transform: rotate(180deg);
+        }
+        
+        /* Efectos florales */
+        .flower {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.1;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .flower-1 {
+            width: 80px;
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        
+        .flower-2 {
+            width: 60px;
+            bottom: 10%;
+            right: 15%;
+            animation-delay: -5s;
+        }
+        
+        .flower-3 {
+            width: 50px;
+            top: 20%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .clock {
+                font-size: 15vw;
+            }
+            .date {
+                font-size: 4vw;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="corner-deco corner-top-left"></div>
-  <div class="corner-deco corner-bottom-right"></div>
-
-  <div class="clock-container" id="clock"></div>
-  <div class="date" id="date"></div>
-
-  <audio id="chime" src="https://assets.mixkit.co/sfx/preview/mixkit-short-bell-ding-586.mp3"></audio>
-
-  <script>
-    function createDigit(value) {
-      const container = document.createElement('div');
-      container.classList.add('digit');
-      const span = document.createElement('span');
-      span.textContent = value;
-      container.appendChild(span);
-      return container;
-    }
-
-    function updateDigits(container, newStr) {
-      while (container.firstChild) {
-        container.removeChild(container.firstChild);
-      }
-      for (let char of newStr) {
-        const digit = createDigit(char);
-        container.appendChild(digit);
-      }
-    }
-
-    function updateClock() {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-
-      const timeStr = `${hours}:${minutes}:${seconds}`;
-      updateDigits(document.getElementById('clock'), timeStr);
-
-      const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
-      const dateString = now.toLocaleDateString('en-US', dateOptions);
-      document.getElementById('date').textContent = dateString;
-
-      if (minutes === '00' && seconds === '00') {
-        document.getElementById('chime').play();
-      }
-    }
-
-    setInterval(updateClock, 1000);
-    updateClock();
-  </script>
+    <!-- Decoraciones de enredadera -->
+    <svg class="vine vine-top-left" viewBox="0 0 100 100">
+        <path d="M0,20 C20,0 40,10 50,30 C60,10 80,0 100,20" />
+        <path d="M20,40 C30,30 40,35 45,45 C50,35 60,30 70,40" />
+        <circle cx="15" cy="25" r="3" />
+        <circle cx="85" cy="35" r="3" />
+        <circle cx="60" cy="55" r="3" />
+    </svg>
+    
+    <svg class="vine vine-bottom-right" viewBox="0 0 100 100">
+        <path d="M0,20 C20,0 40,10 50,30 C60,10 80,0 100,20" />
+        <path d="M20,40 C30,30 40,35 45,45 C50,35 60,30 70,40" />
+        <circle cx="15" cy="25" r="3" />
+        <circle cx="85" cy="35" r="3" />
+        <circle cx="60" cy="55" r="3" />
+    </svg>
+    
+    <!-- Flores decorativas -->
+    <svg class="flower flower-1" viewBox="0 0 100 100">
+        <path d="M50,20 A10,10 0 1,1 50,30 A10,10 0 1,1 50,20 Z" fill="#d81b60"/>
+        <circle cx="50" cy="50" r="15" fill="#d81b60"/>
+    </svg>
+    
+    <svg class="flower flower-2" viewBox="0 0 100 100">
+        <path d="M50,15 A5,5 0 1,1 50,25 A5,5 0 1,1 50,15 Z" fill="#d81b60"/>
+        <path d="M65,30 A5,5 0 1,1 65,40 A5,5 0 1,1 65,30 Z" fill="#d81b60"/>
+        <path d="M35,30 A5,5 0 1,1 35,40 A5,5 0 1,1 35,30 Z" fill="#d81b60"/>
+        <path d="M50,55 A5,5 0 1,1 50,65 A5,5 0 1,1 50,55 Z" fill="#d81b60"/>
+        <circle cx="50" cy="42" r="12" fill="#d81b60"/>
+    </svg>
+    
+    <svg class="flower flower-3" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="25" fill="#d81b60"/>
+        <circle cx="30" cy="30" r="15" fill="#d81b60"/>
+        <circle cx="70" cy="30" r="15" fill="#d81b60"/>
+        <circle cx="30" cy="70" r="15" fill="#d81b60"/>
+        <circle cx="70" cy="70" r="15" fill="#d81b60"/>
+    </svg>
+    
+    <!-- Contenedor principal -->
+    <div class="container">
+        <div class="clock" id="clock">
+            <!-- Los dígitos se generarán dinámicamente con JavaScript -->
+        </div>
+        <div class="date" id="date"></div>
+    </div>
+    
+    <script>
+        // Elementos del DOM
+        const clockElement = document.getElementById('clock');
+        const dateElement = document.getElementById('date');
+        
+        // Formato de fecha en español
+        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        
+        // Almacena los valores anteriores para la animación
+        let prevHours = '';
+        let prevMinutes = '';
+        let prevSeconds = '';
+        
+        // Crear estructura de dígitos
+        function createClockStructure() {
+            // HH:MM:SS
+            const digits = [
+                {type: 'hours', tens: true},
+                {type: 'hours', tens: false},
+                {type: 'colon'},
+                {type: 'minutes', tens: true},
+                {type: 'minutes', tens: false},
+                {type: 'colon'},
+                {type: 'seconds', tens: true},
+                {type: 'seconds', tens: false}
+            ];
+            
+            digits.forEach(digit => {
+                if (digit.type === 'colon') {
+                    const colon = document.createElement('span');
+                    colon.className = 'colon';
+                    colon.textContent = ':';
+                    clockElement.appendChild(colon);
+                } else {
+                    const container = document.createElement('div');
+                    container.className = 'digit-container';
+                    
+                    const digitSpan = document.createElement('div');
+                    digitSpan.className = 'digit';
+                    digitSpan.dataset.type = digit.type;
+                    digitSpan.dataset.tens = digit.tens;
+                    
+                    container.appendChild(digitSpan);
+                    clockElement.appendChild(container);
+                }
+            });
+        }
+        
+        // Actualizar el reloj
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            // Actualizar fecha
+            dateElement.textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+            
+            // Actualizar horas si cambiaron
+            if (hours !== prevHours) {
+                updateDigit('hours', hours);
+                prevHours = hours;
+            }
+            
+            // Actualizar minutos si cambiaron
+            if (minutes !== prevMinutes) {
+                updateDigit('minutes', minutes);
+                prevMinutes = minutes;
+            }
+            
+            // Actualizar segundos
+            updateDigit('seconds', seconds);
+            prevSeconds = seconds;
+            
+            // Reproducir sonido cada hora en punto
+            if (minutes === '00' && seconds === '00') {
+                playBellSound();
+            }
+        }
+        
+        // Actualizar dígito con animación
+        function updateDigit(type, value) {
+            const tens = value[0];
+            const units = value[1];
+            
+            // Actualizar decenas
+            const tensElement = document.querySelector(`.digit[data-type="${type}"][data-tens="true"]`);
+            if (tensElement.textContent !== tens) {
+                animateDigit(tensElement, tens);
+            }
+            
+            // Actualizar unidades
+            const unitsElement = document.querySelector(`.digit[data-type="${type}"][data-tens="false"]`);
+            if (unitsElement.textContent !== units) {
+                animateDigit(unitsElement, units);
+            }
+        }
+        
+        // Animación de dígito
+        function animateDigit(element, newValue) {
+            // Activar animación
+            element.classList.add('flip');
+            
+            // Cambiar el valor después de que comience la animación
+            setTimeout(() => {
+                element.textContent = newValue;
+                
+                // Quitar clase de animación después de que termine
+                setTimeout(() => {
+                    element.classList.remove('flip');
+                }, 500);
+            }, 250);
+        }
+        
+        // Reproducir sonido de campana
+        function playBellSound() {
+            try {
+                // Crear contexto de audio
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // Configurar oscilador (campana)
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // La4
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.1); // Do5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.2); // Mi5
+                
+                // Configurar ganancia (volumen)
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                
+                // Conectar y reproducir
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 1.5);
+            } catch (e) {
+                console.log("Error al reproducir sonido:", e);
+            }
+        }
+        
+        // Inicializar reloj
+        function initClock() {
+            createClockStructure();
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+        
+        // Iniciar cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', initClock);
+    </script>
 </body>
 </html>
