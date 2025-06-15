@@ -22,18 +22,19 @@
             color: #d81b60;
             overflow: hidden;
             position: relative;
+            padding: 20px;
         }
         
         .container {
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 40px;
-            max-width: 900px;
+            max-width: 1200px;
+            width: 100%;
         }
         
         .clock {
-            font-size: 10vw;
+            font-size: clamp(60px, 10vw, 120px);
             font-weight: 700;
             letter-spacing: 5px;
             text-shadow: 3px 3px 10px rgba(216, 27, 96, 0.2);
@@ -97,7 +98,7 @@
         }
         
         .date {
-            font-size: 2.5vw;
+            font-size: clamp(20px, 2.5vw, 30px);
             text-align: right;
             margin-top: 10px;
             opacity: 0.9;
@@ -127,21 +128,22 @@
             stroke-width: 1.5;
             fill: none;
             opacity: 0.2;
+            pointer-events: none;
         }
         
         .vine-top-left {
             top: -20px;
             left: -30px;
-            width: 250px;
-            height: 250px;
+            width: min(250px, 25vw);
+            height: min(250px, 25vw);
             transform: rotate(-10deg);
         }
         
         .vine-bottom-right {
             bottom: -30px;
             right: -50px;
-            width: 350px;
-            height: 350px;
+            width: min(350px, 30vw);
+            height: min(350px, 30vw);
             transform: rotate(180deg);
         }
         
@@ -151,24 +153,25 @@
             z-index: 1;
             opacity: 0.1;
             animation: float 15s infinite ease-in-out;
+            pointer-events: none;
         }
         
         .flower-1 {
-            width: 80px;
+            width: min(80px, 8vw);
             top: 5%;
             left: 5%;
             animation-delay: 0s;
         }
         
         .flower-2 {
-            width: 60px;
+            width: min(60px, 6vw);
             bottom: 10%;
             right: 15%;
             animation-delay: -5s;
         }
         
         .flower-3 {
-            width: 50px;
+            width: min(50px, 5vw);
             top: 20%;
             right: 10%;
             animation-delay: -10s;
@@ -206,16 +209,6 @@
             height: 20px;
             fill: #d81b60;
             opacity: 0.7;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .clock {
-                font-size: 15vw;
-            }
-            .date {
-                font-size: 4vw;
-            }
         }
     </style>
 </head>
@@ -280,10 +273,9 @@
         const dateElement = document.getElementById('date');
         const fullscreenBtn = document.getElementById('fullscreen-btn');
         
-        // Formato de fecha en español
-        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        // Formato de fecha en inglés
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         
         // Almacena los valores anteriores para la animación
         let prevHours = '';
@@ -341,8 +333,8 @@
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
             
-            // Actualizar fecha
-            dateElement.textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+            // Actualizar fecha en formato "Jun 15, 2025"
+            dateElement.textContent = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
             
             // Actualizar horas si cambiaron
             if (hours !== prevHours) {
