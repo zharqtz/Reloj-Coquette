@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reloj de Sylv</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f8c8dc;
+      color: #c2185b;
+      font-family: 'Playfair Display', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .corner-deco {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-image: url('https://i.imgur.com/VaGxIOz.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .corner-top-left {
+      top: 0;
+      left: 0;
+    }
+
+    .corner-bottom-right {
+      bottom: 0;
+      right: 0;
+      transform: rotate(180deg);
+    }
+
+    .clock-container {
+      display: flex;
+      font-size: 100px;
+      font-weight: bold;
+      height: 120px;
+    }
+
+    .digit {
+      overflow: hidden;
+      width: 60px;
+      height: 100px;
+      margin: 0 5px;
+      position: relative;
+    }
+
+    .digit span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .date {
+      font-size: 40px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="corner-deco corner-top-left"></div>
+  <div class="corner-deco corner-bottom-right"></div>
+
+  <div class="clock-container" id="clock"></div>
+  <div class="date" id="date"></div>
+
+  <audio id="chime" src="https://assets.mixkit.co/sfx/preview/mixkit-short-bell-ding-586.mp3"></audio>
+
+  <script>
+    function createDigit(value) {
+      const container = document.createElement('div');
+      container.classList.add('digit');
+      const span = document.createElement('span');
+      span.textContent = value;
+      container.appendChild(span);
+      return container;
+    }
+
+    function updateDigits(container, newStr) {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      for (let char of newStr) {
+        const digit = createDigit(char);
+        container.appendChild(digit);
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+
+      const timeStr = `${hours}:${minutes}:${seconds}`;
+      updateDigits(document.getElementById('clock'), timeStr);
+
+      const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+      const dateString = now.toLocaleDateString('en-US', dateOptions);
+      document.getElementById('date').textContent = dateString;
+
+      if (minutes === '00' && seconds === '00') {
+        document.getElementById('chime').play();
+      }
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
